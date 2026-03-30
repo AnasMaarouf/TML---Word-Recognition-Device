@@ -1,0 +1,4 @@
+filename,filepath,activity,predicted,is_correct
+test_hest_C_kortAfstand_stilleTmlKlasse_001_s01.wav,test_ready\hest\test_hest_C_kortAfstand_stilleTmlKlasse_001_s01.wav,hest,hest,True
+test_laks_C_kortAfstand_stilleTmlKlasse_001_s03.wav,test_ready\laks\test_laks_C_kortAfstand_stilleTmlKlasse_001_s03.wav,laks,laks,True
+test_laks_C_langAfstand_stilleTmlKlasse_001_s03.wav,test_ready\laks\test_laks_C_langAfstand_stilleTmlKlasse_001_s03.wav,laks,laks,True
