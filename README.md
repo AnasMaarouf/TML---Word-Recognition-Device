@@ -64,6 +64,9 @@ Så f.eks.
 Den
 
 #### Afgrænsning
+
+Dataopsamlingen kan gå i mange retninger, hvortil vi i projektet har været nødsaget til at lave en baseline model, som vi kan kalde for et MVP. Nedenunder beskrives en kort opsummering af vores afgrænsning af vores data. For dokumentation af flowet for afgrænsningen, så kan du observere "Dokumentation for afgrænsning.ipynb".
+
 ##### "Intern split"
 Første strategi til dataopsamlingen var:
 
