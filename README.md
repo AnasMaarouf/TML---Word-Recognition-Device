@@ -85,6 +85,8 @@ Tilfældige ord, hvor vi læser op fra "Fyrsten" : 300 samples
 
 Hvortil det udgør 900 samples i unknown klassen
 
+Bemærk, at vi har brugt det optaget baggrundsstøj og lave data curation på vores keyword optagelser fra bachelorlokalet, som er et stille lokale uden baggrundsstøj. 
+
 Hertil lavede vi intern train/test split, hvilket gav os kunstigt høje accuracy scores, som vises nedenunder:
 
 Nedenunder vises confusion matrix med "simple features". Dette kan læses om senere. 
@@ -98,9 +100,31 @@ Altså, spørgsmålet er så om modellen faktisk kan generaliserer når man udta
 ##### "Extern split"
 Hertil skiftede vi strategi, som går ud på at vi i stedet for at lave intern train/test split, så smed vi alt det data ind i en train. Dermed optog vi så en seperat test dataset i en anden dag, for at afspejle virkeligheden med at man skal kunne bruge produktet flere gange og i forskellgie dage. Altså at brugerne har forskellige energi i udtalelser, fra dag til dag, mm. 
 
-Dette kalder vi for "tests" i repository strukturen, hvor "Første" indeholdte intern train/test split. 
+Dertil afgrænsede vi også yderligere med at fokusere på 
 
-###### Test_tmlKlasse" - Første extern test 
+Dette kalder vi for "tests" i repository strukturen, hvor "Intern" indeholdte intern train/test split. 
+
+###### Dummy extern split med hurtige optagelser i TinyML klasse baggrundsstøj 
+
+TEST DATASÆTTET ER BASERET PÅ 126 SAMPLES, SOM VI HURTIGT OPTOG I TinyML KLASSELOKALET. Hertil var der ikke kontrolleret ift. afstand og retningen af mikrofonen, samt at vi optog i selve klasselokalet, hvortil vi med datacuration blot lagde stille keyword optagelser ovenpå seperat målt TinyML klasse baggrundsstøj. 
+
+Hertil brugte vi denne train/test split:
+Train: 1800 samples, baseret på det samlede datasæt som set i "Intern Split"
+Test: 126 samples
+
+Det gav nedenstående confusion matrix eksempler:
+
+![alt text](image-10.png)
+
+![alt text](image-11.png)
+
+![alt text](image-12.png)
+
+![alt text](image-13.png)
+
+Ovenstående test data er fra tmlKlassen, hvilket vores optagelser med keywords ikke er robust for. Siden vi kun har optaget vores keywords i bachelor lokalet, så bør vi helst starte med at vores model er robust for bachelor lokalet eller en tilsvarende stille lokale. 
+
+###### Test_tmlKlasse" - Extern test i stille TinyML lokale 
 
 Hertil er strategien for dataopsamlingen vist således:
 
@@ -128,7 +152,7 @@ Forskellen i lydkvalitet denne her dag er så at mikrofonoptagelserne bestod af 
 
 ![alt text](image-5.png)
 
-###### "Test_Chjem" - Endelig afgrænsing
+###### "Test_Chjem" - Extern test i stille og kontrolleret miljø, uden klik og muligt for stor domæneskift (Endelig afgrænsing)
 
 Derfor optog Christian hjemme hos ham selv, hvor akustikken minder mere om bachelor-lokalet, samt at der ikke kan være f.eks. ventilationssystemer eller andet, som påvirker til støj i mikrofonoptagelserne. 
 
