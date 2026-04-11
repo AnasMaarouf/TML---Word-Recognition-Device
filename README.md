@@ -17,7 +17,7 @@ The overall idea for the project is:
 
 ## Repository Structure
 
-OPDATER VORES REPOSITORY, SÅ DET ER MERE LET LÆSELIGT OG FORSTÅENDE, LIGESOM NEDENSTÅENDE
+**OPDATER VORES REPOSITORY, SÅ DET ER MERE LET LÆSELIGT OG FORSTÅENDE, LIGESOM NEDENSTÅENDE**
 
 ```
 TINYML/
@@ -187,12 +187,12 @@ Outputs:
 - `model_v3_meta.json` (metadata)
 - `model_v3.h` (C++ header for Photon 2)
 
-### 4. Embedded Deployment
+### 2.3. Embedded Deployment
 Copy `model_v3.h` into `/firmware/drone_detection_live_photon/`  
 This firmware runs the same feature extraction and real-time inference on the Photon 2.  
 Predictions are sent via TCP to your PC.
 
-### 5. Real-time Monitoring
+### 2.4. Real-time Monitoring
 Run the live viewer:
 ```bash
 cd server
@@ -209,6 +209,9 @@ Example output:
 TBA
 
 ---
+
+
+**NEDENSTÅENDE SKAL OPDATERES ELLER FJERNES HELT**
 
 ## Particle Workbench / Firmware Build Guide
 
