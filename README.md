@@ -97,7 +97,7 @@ Altså, spørgsmålet er så om modellen faktisk kan generaliserer når man udta
 ##### "Extern split"
 Hertil skiftede vi strategi, som går ud på at vi i stedet for at lave intern train/test split, så smed vi alt det data ind i en train. Dermed optog vi så en seperat test dataset i en anden dag, for at afspejle virkeligheden med at man skal kunne bruge produktet flere gange og i forskellgie dage. Altså at brugerne har forskellige energi i udtalelser, fra dag til dag, mm. 
 
-Dette kalder vi for "tests" i repository strukturen, hvor "Første" indeholdte intern train/test split. 
+Dette kalder vi for "tests" i repository strukturen, hvor "Intern" indeholdte intern train/test split. 
 
 ###### Test_tmlKlasse" - Afgrænsning til at virke kun i stille og kontrolleret miljøer. 
 
