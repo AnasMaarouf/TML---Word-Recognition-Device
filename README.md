@@ -67,7 +67,7 @@ Den
 
 Dataopsamlingen kan gå i mange retninger, hvortil vi i projektet har været nødsaget til at lave en baseline model, som vi kan kalde for et MVP. Nedenunder beskrives en kort opsummering af vores afgrænsning af vores data. For dokumentation af flowet for afgrænsningen, så kan du observere "Dokumentation for afgrænsning.ipynb".
 
-##### "Intern split"
+##### "Intern split" - Hurtig tjek af datasæt fra bachelorlokale
 Første strategi til dataopsamlingen var:
 
 10 gentagelser * (3 speakers * 5 ord * 2 afstande * 3 støjmiljøer) = 900 samples
@@ -82,7 +82,8 @@ Baggrundsstøj:
 - Nygaard : 200 samples
 
 Tilfældige ord, hvor vi læser op fra "Fyrsten" : 300 samples
-Hvortil der er 900 i unknown klassen
+
+Hvortil det udgør 900 samples i unknown klassen
 
 Hertil lavede vi intern train/test split, hvilket gav os kunstigt høje accuracy scores, som vises nedenunder:
 
@@ -97,11 +98,23 @@ Altså, spørgsmålet er så om modellen faktisk kan generaliserer når man udta
 ##### "Extern split"
 Hertil skiftede vi strategi, som går ud på at vi i stedet for at lave intern train/test split, så smed vi alt det data ind i en train. Dermed optog vi så en seperat test dataset i en anden dag, for at afspejle virkeligheden med at man skal kunne bruge produktet flere gange og i forskellgie dage. Altså at brugerne har forskellige energi i udtalelser, fra dag til dag, mm. 
 
-Dette kalder vi for "tests" i repository strukturen, hvor "Intern" indeholdte intern train/test split. 
+Dette kalder vi for "tests" i repository strukturen, hvor "Første" indeholdte intern train/test split. 
 
-###### Test_tmlKlasse" - Afgrænsning til at virke kun i stille og kontrolleret miljøer. 
+###### Test_tmlKlasse" - Første extern test 
 
-Hertil skiftede vi strategi, som går ud på at vi i stedet for at lave intern train/test split, så smed vi alt det data ind i en train. Dermed optog vi så en seperat test dataset i en anden dag, for at afspejle virkeligheden med at man skal kunne bruge produktet flere gange og i forskellgie dage. Altså at brugerne har forskellige energi i udtalelser, fra dag til dag, mm. 
+Hertil er strategien for dataopsamlingen vist således:
+
+Train: 
+- Keywords: 10 gentagelser * (3 speakers * 5 ord * 2 afstande) = 300
+- Unknown: 80% random tale og 20% stilhed --> Bruger samme optagelser som vi gjorde første gang, men vi øger mængden af data indeholdende random tale og mindsker mængden af stilhed, for at vores model ikke bliver trænet på for meget stilhed. 
+    - 60 stilheds samples fra bachelorlokale
+    - 240 random ord samples fra bachelorlokale
+
+Test:
+- Keywords: 3 gentagelser * (3 speakers * 5 ord * 2 afstande) = 90
+- Unknown: 50% random tale og 50% stilhed i TinyML klasselokalet 
+    - 20 stilheds samples
+    - 20 random ord
 
 Støjmiljøet er stille, men selve rummet blev rykket op fra bachelorlokalet til Tiny Machine Learning klasse lokalet, hvor der ikke var andre folk til stede end os 3. 
 
@@ -115,7 +128,7 @@ Forskellen i lydkvalitet denne her dag er så at mikrofonoptagelserne bestod af 
 
 ![alt text](image-5.png)
 
-###### "Test_Chjem" - Nuværende scope 
+###### "Test_Chjem" - Endelig afgrænsing
 
 Derfor optog Christian hjemme hos ham selv, hvor akustikken minder mere om bachelor-lokalet, samt at der ikke kan være f.eks. ventilationssystemer eller andet, som påvirker til støj i mikrofonoptagelserne. 
 
