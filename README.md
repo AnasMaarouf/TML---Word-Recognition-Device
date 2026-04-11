@@ -160,6 +160,8 @@ Her fik vi flere true positives og negatives, som vist nedenunder:
 
 Hvilket skyldes at det er i et mere kontrolleret miljø. Dermed er det vores afgrænsning af projektets dataindsamling. 
 
+Hertil er det vigtigt at bemærke at i disse afgrænsninger er der ikke ændret features, mm. undervejs, så der er umiddelbart variabelkontrol, udover forskellige datasæt, samt også forskellige train test størrelser af disse. 
+
 #### Server
 NEDENUNDER OPDATERES SÅ DET MATCHER VORES OPSAMLING MED TCP SERVER
 
