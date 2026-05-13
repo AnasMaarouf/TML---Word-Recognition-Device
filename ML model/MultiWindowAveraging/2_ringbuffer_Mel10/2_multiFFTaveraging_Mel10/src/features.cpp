@@ -149,6 +149,7 @@ bool extract_mel_features_cpp(
     return true;
 }
 
+/*
 bool extract_mel_features_i16_cpp(
     const int16_t* x,
     int n,
@@ -220,6 +221,107 @@ bool extract_mel_features_i16_cpp(
 
     for (int i = 0; i < N_MELS; ++i) {
         features_out[i] = mel_sum[i] * inv;
+    }
+
+    return true;
+}
+*/
+bool extract_mel_features_i16_cpp(
+    const int16_t* x,
+    int n,
+    float fs,
+    float* features_out
+) {
+    static float frame_raw[FEATURE_FFT_N];
+    static float mel_sum[N_MELS];
+    static float mel_frame[N_MELS];
+
+    if (x == nullptr || features_out == nullptr) {
+        return false;
+    }
+
+    if (n <= 0) {
+        return false;
+    }
+
+    // Match Python peak normalization without allocating full float clip
+    float max_abs = 1.0f;
+
+    for (int i = 0; i < n; ++i) {
+        float a = fabsf((float)x[i]);
+
+        if (a > max_abs) {
+            max_abs = a;
+        }
+    }
+
+    const float inv_peak = 1.0f / max_abs;
+
+    for (int i = 0; i < N_MELS; ++i) {
+        mel_sum[i] = 0.0f;
+    }
+
+    int num_windows = 0;
+
+    auto process_window = [&](int start) -> bool {
+        for (int i = 0; i < FEATURE_FFT_N; ++i) {
+            frame_raw[i] = 0.0f;
+        }
+
+        int available = n - start;
+        int copy_len = std::min(available, FEATURE_FFT_N);
+
+        for (int i = 0; i < copy_len; ++i) {
+            frame_raw[i] = ((float)x[start + i]) * inv_peak;
+        }
+
+        if (!mel_features_frame_cpp(frame_raw, fs, mel_frame, N_MELS)) {
+            return false;
+        }
+
+        for (int i = 0; i < N_MELS; ++i) {
+            mel_sum[i] += mel_frame[i];
+        }
+
+        return true;
+    };
+
+    if (n <= FEATURE_FFT_N) {
+        if (!process_window(0)) {
+            return false;
+        }
+
+        num_windows = 1;
+    } else {
+        int last_start = n - FEATURE_FFT_N;
+        int last_processed_start = -1;
+
+        for (int start = 0; start <= last_start; start += FEATURE_FFT_HOP) {
+            if (!process_window(start)) {
+                return false;
+            }
+
+            last_processed_start = start;
+            num_windows++;
+        }
+
+        if (last_processed_start != last_start) {
+            if (!process_window(last_start)) {
+                return false;
+            }
+
+            num_windows++;
+        }
+    }
+
+    if (num_windows <= 0) {
+        return false;
+    }
+
+    const float inv_windows = 1.0f / (float)num_windows;
+
+    for (int i = 0; i < N_MELS; ++i) {
+        features_out[i] = mel_sum[i] * inv_windows;
     }
 
     return true;
