@@ -1,0 +1,33 @@
+{
+  "input_wav": "test_ready_chjem2\\får\\test_får_C_0.75m_Chjem_002_s01.wav",
+  "sample_rate": 16000,
+  "fft_n": 4096,
+  "fft_hop": 2048,
+  "n_mels": 10,
+  "selected_features_name": "mel",
+  "selected_features_order": [
+    "mel_1",
+    "mel_2",
+    "mel_3",
+    "mel_4",
+    "mel_5",
+    "mel_6",
+    "mel_7",
+    "mel_8",
+    "mel_9",
+    "mel_10"
+  ],
+  "selected_feature_values": {
+    "mel_1": 0.8197245597839355,
+    "mel_2": 7.225688457489014,
+    "mel_3": 4.496304988861084,
+    "mel_4": 0.3728727400302887,
+    "mel_5": 0.005441377870738506,
+    "mel_6": 0.0017842472298070788,
+    "mel_7": 0.0075641837902367115,
+    "mel_8": 0.008298889733850956,
+    "mel_9": 0.000884795153979212,
+    "mel_10": 0.0014460290549322963
+  },
+  "note": "simple_mel features: RMS/ZCR over full clip, spectral and Mel features averaged over multiple 4096-sample FFT windows with 50% overlap."
+}

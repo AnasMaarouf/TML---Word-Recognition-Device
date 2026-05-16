@@ -1,0 +1,27 @@
+{
+  "input_wav": "test_ready\\får\\test_får_C_0.75m_Chjem_001_s01.wav",
+  "sample_rate": 16000,
+  "selected_features_name": "simple",
+  "selected_features_order": [
+    "rms",
+    "zcr",
+    "centroid",
+    "rolloff",
+    "dominant_freq",
+    "band_0_500",
+    "band_500_1500",
+    "band_1500_3000",
+    "band_3000_6000"
+  ],
+  "selected_feature_values": {
+    "rms": 0.11183798313140869,
+    "zcr": 0.19901243827739235,
+    "centroid": 1342.1800849020806,
+    "rolloff": 3076.0,
+    "dominant_freq": 778.0,
+    "band_0_500": 68001.94606285372,
+    "band_500_1500": 569232.756218563,
+    "band_1500_3000": 4324.337334654407,
+    "band_3000_6000": 10590.708378573865
+  }
+}
