@@ -5,7 +5,7 @@
 
 static const int32_t test_num_samples = 12;
 
-__attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_0[16000] = {
+static const int16_t test_audio_0[16000] = {
     -290,
     -327,
     -436,
@@ -16008,7 +16008,7 @@ __attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_
     -109
 };
 
-__attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_1[16000] = {
+static const int16_t test_audio_1[16000] = {
     393,
     229,
     295,
@@ -32011,7 +32011,7 @@ __attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_
     295
 };
 
-__attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_2[16000] = {
+static const int16_t test_audio_2[16000] = {
     -467,
     -467,
     -207,
@@ -48014,7 +48014,7 @@ __attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_
     -467
 };
 
-__attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_3[16000] = {
+static const int16_t test_audio_3[16000] = {
     213,
     383,
     426,
@@ -64017,7 +64017,7 @@ __attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_
     426
 };
 
-__attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_4[16000] = {
+static const int16_t test_audio_4[16000] = {
     339,
     339,
     296,
@@ -80020,7 +80020,7 @@ __attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_
     254
 };
 
-__attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_5[16000] = {
+static const int16_t test_audio_5[16000] = {
     455,
     318,
     364,
@@ -96023,7 +96023,7 @@ __attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_
     409
 };
 
-__attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_6[16000] = {
+static const int16_t test_audio_6[16000] = {
     -178,
     -356,
     -237,
@@ -112026,7 +112026,7 @@ __attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_
     -118
 };
 
-__attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_7[16000] = {
+static const int16_t test_audio_7[16000] = {
     -574,
     -319,
     -319,
@@ -128029,7 +128029,7 @@ __attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_
     -830
 };
 
-__attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_8[16000] = {
+static const int16_t test_audio_8[16000] = {
     489,
     419,
     349,
@@ -144032,7 +144032,7 @@ __attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_
     139
 };
 
-__attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_9[16000] = {
+static const int16_t test_audio_9[16000] = {
     380,
     380,
     304,
@@ -160035,7 +160035,7 @@ __attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_
     -304
 };
 
-__attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_10[16000] = {
+static const int16_t test_audio_10[16000] = {
     -419,
     -419,
     -335,
@@ -176038,7 +176038,7 @@ __attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_
     83
 };
 
-__attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_11[16000] = {
+static const int16_t test_audio_11[16000] = {
     -292,
     -292,
     -97,
@@ -192041,7 +192041,7 @@ __attribute__((section(".rodata"), aligned(4))) static const int16_t test_audio_
     -97
 };
 
-__attribute__((section(".rodata"), aligned(4))) static const int16_t* const test_audio_ptrs[12] = {
+static const int16_t* const test_audio_ptrs[12] = {
     test_audio_0,
     test_audio_1,
     test_audio_2,
@@ -192056,7 +192056,7 @@ __attribute__((section(".rodata"), aligned(4))) static const int16_t* const test
     test_audio_11
 };
 
-__attribute__((section(".rodata"), aligned(4))) static const int32_t test_lengths[12] = {
+static const int32_t test_lengths[12] = {
     16000,
     16000,
     16000,
@@ -192071,7 +192071,7 @@ __attribute__((section(".rodata"), aligned(4))) static const int32_t test_length
     16000
 };
 
-__attribute__((section(".rodata"), aligned(4))) static const int32_t test_labels[12] = {
+static const int32_t test_labels[12] = {
     4,
     4,
     4,
