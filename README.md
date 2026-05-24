@@ -2,22 +2,21 @@
 
 ## Overview
 
-OPDATER VORES Projektbeskrivelse kort og hvad der er must have og hvad det færdige system er tiltænkt at kunne (med speaker model og adgangskontrol logik)
+This project revolves around creating a TinyML solution on the Particle Photon2 board. Along with the board is a PDM microphone sensor. 
 
-This project revolves around creating a TinyML solution on the Particle Photon2 board. Along with the board is two sensors:
+The overall idea for the project is to perform multiclass classification between different keywords. The list of labelled positive keywords is as follows:
+- "Får"
+- "Ged"
+- "Hest"
+- "Laks"
+- "Ulv"
 
-    A PDM microphone
-    Temperature Sensor, perhaps LM75?
+Also containing negative class labelled as unknown. 
 
-The overall idea for the project is:
-
-    Vi vil bruge multiclass classification til at kunne klassificere mellem forskellige keyword/key sentences, såsom “Hey”, “Start”, “Stop”, “*støj*” 
-        Vi bør være opmærksomme på at vi bør vælge ord, som ikke indeholder plosiver, såsom T, P, osv. Det vil fucke mikrofon målingen op
+This project divides the TinyML pipeline, by using both traditional machine learning and also a deep learning algorithm. 
 
 
 ## Repository Structure
-
-**OPDATER VORES REPOSITORY, SÅ DET ER MERE LET LÆSELIGT OG FORSTÅENDE, LIGESOM NEDENSTÅENDE**
 
 ```
 TML---Word_recognition-Device/
@@ -53,9 +52,6 @@ TML---Word_recognition-Device/
 ```
 
 ---
-
-
-
 
 ## Authors
 **Christian Rex Rønfeldt Brandt Pilegaard, 6. semester - Diplomingeniør i Eleketronik studerende**
