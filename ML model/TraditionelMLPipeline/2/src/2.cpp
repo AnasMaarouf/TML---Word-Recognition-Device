@@ -567,6 +567,7 @@ int classify_fixed_clip(
         pred = 5; // unknown
     }
 
+    /*
     Serial.printf(
         "CLIP DETECTED -> pred=%d label=%s raw_pred=%d raw_label=%s conf=%.3f\r\n",
         pred,
@@ -576,6 +577,15 @@ int classify_fixed_clip(
         best
     );
 
+    */
+
+    Serial.printf(
+        "CLIP DETECTED -> pred=%d label=%s\r\n",
+        pred,
+        CLASS_NAMES[pred]
+    );
+
+    /*
     Serial.printf(
         "CLIP STATS -> min=%d max=%d clipped=%d clipped_ratio=%.6f large_jump=%d\r\n",
         stats.minv,
@@ -584,6 +594,7 @@ int classify_fixed_clip(
         stats.clipped_ratio,
         stats.large_jump
     );
+    */
 
     Serial.printf(
         "PROBA -> får=%.3f ged=%.3f hest=%.3f laks=%.3f ulv=%.3f unknown=%.3f\r\n",

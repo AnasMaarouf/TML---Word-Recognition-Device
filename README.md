@@ -20,29 +20,21 @@ The overall idea for the project is:
 **OPDATER VORES REPOSITORY, SÅ DET ER MERE LET LÆSELIGT OG FORSTÅENDE, LIGESOM NEDENSTÅENDE**
 
 ```
-TINYML/
-├── csv_files/                      # Extracted features CSVs
-├── Data/
-│   ├── recordings_drone/           # Drone recordings (.wav)
-│   └── recordings_not_drone/       # Background/noise recordings
-├── firmware/
-│   ├── data_photon/                # Data recording firmware
-│   ├── drone_detection_live_photon/# Real-time detection firmware
-│   ├── model_v3.h                  # Exported ML model header
-│   ├── model_v3.pkl                # Trained model (Python format)
-│   ├── model_v3_meta.json          # Metadata for model_v3
-│   └──drone_classifier.joblib      # Serialized scikit-learn model
-├── hardware/
-│   ├── blokdiagram.drawio          # Editable system architecture diagram (created in draw.io)
-│   ├── blokdiagram.png             # Final exported version of the block diagram used in the report and GitHub
-│   └── Hardware Documentation.pdf  # Full hardware report including wiring, device configuration, Wi-Fi/TCP workflow, and block diagram
-├── python/
-│   ├── feature_extract_v3.py       # Unified feature extraction
-│   ├── combine_and_train_v3.py     # Model training + micromlgen export
-│   └── analyze_features.py         # EDA + confusion matrix + importances
-├── server/
-│   ├── server.js                   # TCP WAV logger (for data collection)
-│   └── server_live.js              # Real-time classification viewer
+TML---Word_recognition-Device/
+├── Dataopsamling/
+│   ├── DAQ_KWS/                    
+        ├── lib/
+            └── Microphone_PDM/             # PDM-microphone library, used in source
+        ├── server/
+            └── out/
+                └── får_A_0.75m_stille.001  # 30 second recordings (.WAV)
+                └── ...                     # More Recordings (.WAV)
+        └── src/
+            └── DAQ_KWS.cpp                 # Data aqqusition source code (.cpp)
+├── ML model/
+│   ├── Tidligere_arbejde/                  # Rodet directory, som indeholder alt tidligere arbejde med traditionel ML
+    └── TraditionelMLPipeline/              # Pipeline for traditionel ML, som bruges i rapporten, dog med ekstra funktionaliteter. Læs "TraditionelMLPipeline.ipynb" for Python kode, hvortil der er referencer til C++ kode i den samme rækkefølge, som pipelinen blev udført med. 
+├── DL model/
 └── README.md
 ```
 
@@ -253,85 +245,7 @@ TBA
 ---
 
 
-**NEDENSTÅENDE SKAL OPDATERES ELLER FJERNES HELT**
 
-## Particle Workbench / Firmware Build Guide
-
-### Prerequisites
-- **Particle Workbench** (VS Code extension) or **Particle CLI**
-- Photon 2 device connected via USB
-- Correct firmware folder selected (e.g. `/firmware/drone_detection_live_photon`)
-
-### Building and Flashing
-1. Open the project folder in **Particle Workbench** (`File → Open Folder → firmware/drone_detection_live_photon`).
-2. Connect Photon 2 via USB.
-3. In the Workbench command palette (`Ctrl+Shift+P`), choose:
-   ```
-   Particle: Configure Project for Device
-   → Device: Photon 2
-   → Platform: photon2
-   → Compiler: default (latest)
-   ```
-4. Build locally:
-   ```
-   Particle: Compile application (local)
-   ```
-5. Flash firmware via USB:
-   ```
-   Particle: Flash application (local)
-   ```
-6. Monitor serial output:
-   ```
-   Particle: Serial Monitor
-   ```
-
-You should see logs such as:
-```
-[INFO] === Photon 2 Real-time Drone Classification (RAW DEBUG MODE) ===
-[INFO] TCP connected!
-[INFO] RMS=0.12 | ZCR=0.174 | Cent=415Hz | Roll=1004Hz | → noise
-```
-
----
-
-## Python Requirements
-```
-numpy
-pandas
-scikit-learn
-librosa
-matplotlib
-micromlgen
-joblib
-```
-
-Create a venv and install:
-```bash
-python -m venv .venv
-source .venv/bin/activate  # (Windows: .venv\Scripts\activate)
-pip install -r requirements.txt
-```
-
----
-
-## Model Info
-| Parameter | Value |
-|------------|--------|
-| Algorithm | Random Forest |
-| Trees | 80 |
-| Max Depth | 16 |
-| Accuracy | ~87% |
-| Classes | STX8B, X, noise |
-| Exported via | micromlgen |
-
----
-
-## Notes
-- `.venv` and raw `.wav` files are ignored by Git.
-- `X2` class recordings are automatically merged into `X`.
-- Make sure your PC and Photon are on the same local network for TCP communication.
-
----
 
 ## Authors
 **Christian Rex Rønfeldt Brandt Pilegaard, 6. semester - Diplomingeniør i Eleketronik studerende**
