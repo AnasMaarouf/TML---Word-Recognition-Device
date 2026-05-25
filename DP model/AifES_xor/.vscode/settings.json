@@ -1,0 +1,14 @@
+{
+    "extensions.ignoreRecommendations": true,
+    "C_Cpp.default.configurationProvider": "particle.particle-vscode-core",
+    "files.associations": {
+        "*.ino": "cpp"
+    },
+    "particle.targetPlatform": "p2",
+    "particle.firmwareVersion": "5.6.0",
+    "workbench.colorCustomizations": {
+        "minimap.background": "#00000000",
+        "scrollbar.shadow": "#00000000"
+    },
+    "particle.targetDevice": "0a10aced202194944a055d4c"
+}
