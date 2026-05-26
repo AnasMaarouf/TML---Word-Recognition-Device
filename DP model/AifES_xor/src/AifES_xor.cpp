@@ -10,17 +10,15 @@
 // Dense(16) -> ReLU
 // Dense(6)  -> Softmax
 //
-// IMPORTANT:
-// Replace ALL WEIGHT ARRAYS with exported TensorFlow weights.
 
 #include "Particle.h"
 #include "Microphone_PDM.h"
 #include "aifes.h"
+#include <math.h>
 
 SYSTEM_MODE(MANUAL);
 SYSTEM_THREAD(ENABLED);
 
-// Audio settings
 #define SAMPLE_RATE         16000
 #define AUDIO_SAMPLES       4096
 
@@ -32,7 +30,6 @@ SYSTEM_THREAD(ENABLED);
 #define PI_F                3.14159265359f
 #define EPS                 1e-12f
 
-// Lables
 const char *labels[NUM_CLASSES] = {
     "får",
     "ged",
@@ -42,11 +39,8 @@ const char *labels[NUM_CLASSES] = {
     "unknown"
 };
 
-
-// Audio buffer
 int16_t sampleBuffer[AUDIO_SAMPLES];
 
-// MFCC output
 float mfcc_features[N_MFCC];
 
 // Model weights
@@ -3868,7 +3862,7 @@ float dense4_bias[6] = {
   0.034424f
 };
 
-// AIfES model
+
 aimodel_t model;
 ailayer_t *x;
 
@@ -3887,136 +3881,156 @@ ailayer_dense_f32_t dense4;
 ailayer_softmax_f32_t softmax_layer;
 
 
-// FFT
-void compute_fft_power(float *input, float *power)
-{
-    for (int k = 0; k < (AUDIO_SAMPLES / 2 + 1); k++)
-    {
-        float real = 0.0f;
-        float imag = 0.0f;
-
-        for (int n = 0; n < AUDIO_SAMPLES; n++)
-        {
-            float window =
-                0.5f - 0.5f * cosf(2.0f * PI_F * n / (AUDIO_SAMPLES - 1));
-
-            float sample = input[n] * window;
-
-            float phase =
-                2.0f * PI_F * k * n / AUDIO_SAMPLES;
-
-            real += sample * cosf(phase);
-            imag -= sample * sinf(phase);
-        }
-
-        power[k] = (real * real) / AUDIO_SAMPLES;
-    }
-}
-
-// MEL SCALE
-float hz_to_mel(float hz)
-{
+float hz_to_mel(float hz) {
     return 2595.0f * log10f(1.0f + hz / 700.0f);
 }
 
-float mel_to_hz(float mel)
-{
-    return 700.0f * (powf(10.0f, mel / 2595.0f) - 1.0f);
+float mel_to_hz(float mel) {
+    return 700.0f *
+        (powf(10.0f, mel / 2595.0f) - 1.0f);
 }
 
-// MEL
-void compute_mel(float *power, float *mel_out)
-{
-    float mel_min = hz_to_mel(0.0f);
-    float mel_max = hz_to_mel(SAMPLE_RATE / 2);
+float eml_audio_mel_center(int n, int n_mels, float fmin, float fmax) {
+    float melmin = hz_to_mel(fmin);
+    float melmax = hz_to_mel(fmax);
+    float melstep = (melmax - melmin) / (n_mels + 1);
+    float mel = melmin + (n * melstep);
 
-    float mel_step =
-        (mel_max - mel_min) / (N_MELS + 1);
+    return mel_to_hz(mel);
+}
 
-    for (int m = 0; m < N_MELS; m++)
-    {
-        float left_mel   = mel_min + mel_step * m;
-        float center_mel = mel_min + mel_step * (m + 1);
-        float right_mel  = mel_min + mel_step * (m + 2);
+int eml_audio_mel_bin(float hz, int n_fft, float samplerate) {
+    return (int) floorf((n_fft + 1) * (hz / samplerate));
+}
 
-        float left_hz   = mel_to_hz(left_mel);
-        float center_hz = mel_to_hz(center_mel);
-        float right_hz  = mel_to_hz(right_mel);
+float eml_fft_freq(int k, int n_fft, float samplerate) {
+    float end = samplerate / 2.0f;
+    int steps = (1 + n_fft / 2) - 1;
 
-        int left_bin =
-            (int)((AUDIO_SAMPLES + 1) * left_hz / SAMPLE_RATE);
+    return ((float)k * end) / steps;
+}
 
-        int center_bin =
-            (int)((AUDIO_SAMPLES + 1) * center_hz / SAMPLE_RATE);
+void compute_fft_power(float *input, float *power) {
+    for (int k = 0; k < (AUDIO_SAMPLES / 2 + 1); k++) {
+        float real = 0.0f;
 
-        int right_bin =
-            (int)((AUDIO_SAMPLES + 1) * right_hz / SAMPLE_RATE);
+        for (int n = 0; n < AUDIO_SAMPLES; n++) {
+            float window = 0.5f - 0.5f * cosf(2.0f * PI_F * n / (AUDIO_SAMPLES - 1));
 
-        float sum = 0.0f;
+            float sample = input[n] * window;
 
-        for (int k = left_bin; k < center_bin; k++)
-        {
-            float w =
-                (float)(k - left_bin) /
-                (center_bin - left_bin);
+            float phase =2.0f * PI_F * k * n / AUDIO_SAMPLES;
 
-            sum += power[k] * w;
+            real += sample * cosf(phase);
         }
 
-        for (int k = center_bin; k < right_bin; k++)
-        {
-            float w =
-                (float)(right_bin - k) /
-                (right_bin - center_bin);
-
-            sum += power[k] * w;
-        }
-
-        mel_out[m] = logf(sum + EPS);
+        power[k] = (real * real) / (float)AUDIO_SAMPLES;
     }
 }
 
-// DCT-II
-void compute_dct(float *input, float *output)
-{
+void compute_mel(float *power, float *mel_out) {
+    float fmin = 0.0f;
+    float fmax = SAMPLE_RATE / 2.0f;
+
+    int max_bin = 1 + AUDIO_SAMPLES / 2;
+
+    for (int m = 1; m <= N_MELS; m++) {
+        float left_hz = eml_audio_mel_center(m - 1, N_MELS, fmin, fmax);
+
+        float center_hz = eml_audio_mel_center(
+                m, N_MELS, fmin, fmax);
+
+        float right_hz = eml_audio_mel_center(m + 1, N_MELS, fmin, fmax);
+
+        int left = eml_audio_mel_bin(left_hz, AUDIO_SAMPLES, SAMPLE_RATE);
+
+        int center = eml_audio_mel_bin(center_hz, AUDIO_SAMPLES, SAMPLE_RATE);
+
+        int right = eml_audio_mel_bin(right_hz, AUDIO_SAMPLES, SAMPLE_RATE);
+
+        if (left < 0) left = 0;
+        if (center < 0) center = 0;
+        if (right < 0) right = 0;
+
+        if (left >= max_bin) left = max_bin - 1;
+        if (center >= max_bin) center = max_bin - 1;
+        if (right >= max_bin) right = max_bin - 1;
+
+        float fdifflow = center_hz - left_hz;
+
+        float fdiffupper = right_hz - center_hz;
+
+        float val = 0.0f;
+
+        // Lower triangle
+        for (int k = left; k <= center; k++) {
+            float r = left_hz - eml_fft_freq(k, AUDIO_SAMPLES, SAMPLE_RATE);
+            float weight = 0.0f;
+            if (fdifflow != 0.0f) {
+                weight = -r / fdifflow;
+            }
+
+            if (weight < 0.0f) weight = 0.0f;
+
+            if (weight > 1.0f) weight = 1.0f;
+
+            val += power[k] * weight;
+        }
+
+        // Upper triangle
+        for (int k = center; k < right; k++) {
+            if ((k + 1) >= max_bin)
+                break;
+
+            float r = right_hz - eml_fft_freq( k + 1, AUDIO_SAMPLES, SAMPLE_RATE);
+
+            float weight = 0.0f;
+
+            if (fdiffupper != 0.0f) {
+                weight = r / fdiffupper;
+            }
+
+            if (weight < 0.0f) weight = 0.0f;
+            if (weight > 1.0f) weight = 1.0f;
+
+            val += power[k + 1] * weight;
+        }
+
+        mel_out[m - 1] = logf(val + EPS);
+    }
+}
+
+void compute_dct( float *input, float *output) {
     for (int k = 0; k < N_MFCC; k++) {
         float sum = 0.0f;
 
         for (int n = 0; n < N_MELS; n++) {
-            sum += input[n] *
-                cosf( PI_F * k * (n + 0.5f) / N_MELS);
+            sum += input[n] * cosf(PI_F * k * (n + 0.5f) / N_MELS);
         }
 
         output[k] = sum;
     }
 }
 
-// MFCC
-void compute_mfcc(int16_t *samples, float *mfcc) {
+void compute_mfcc( int16_t *samples, float *mfcc) {
     static float audio_float[AUDIO_SAMPLES];
-    static float power[AUDIO_SAMPLES / 2 + 1];
+
+    static float power[ AUDIO_SAMPLES / 2 + 1];
+
     static float mel[N_MELS];
 
     for (int i = 0; i < AUDIO_SAMPLES; i++) {
         audio_float[i] = (float)samples[i] / 32768.0f;
     }
 
-    compute_fft_power(audio_float, power);
+    compute_fft_power( audio_float, power);
 
     compute_mel(power, mel);
 
-    compute_dct(mel, mfcc);
+    compute_dct( mel, mfcc);
 }
 
-// Model setup
-
-
-// =====================================================
-// PREDICTION
-// =====================================================
-
-void predict(float *mfcc)
-{
+void predict(float *mfcc) {
     uint16_t input_shape[] = {1, N_MFCC};
 
     aitensor_t input_tensor = AITENSOR_2D_F32(input_shape, mfcc);
@@ -4025,9 +4039,9 @@ void predict(float *mfcc)
 
     float output_data[NUM_CLASSES];
 
-    aitensor_t output_tensor = AITENSOR_2D_F32(output_shape, output_data);
+    aitensor_t output_tensor = AITENSOR_2D_F32( output_shape, output_data);
 
-    aialgo_inference_model(&model, &input_tensor, &output_tensor);
+    aialgo_inference_model( &model, &input_tensor, &output_tensor);
 
     int best = 0;
     float best_score = output_data[0];
@@ -4042,8 +4056,7 @@ void predict(float *mfcc)
     Serial.println();
     Serial.println("===== PREDICTION =====");
 
-    for (int i = 0; i < NUM_CLASSES; i++)
-    {
+    for (int i = 0; i < NUM_CLASSES; i++) {
         Serial.print(labels[i]);
         Serial.print(": ");
         Serial.println(output_data[i], 5);
@@ -4055,9 +4068,6 @@ void predict(float *mfcc)
     Serial.println("======================");
 }
 
-// =====================================================
-// RECORD AUDIO
-// =====================================================
 
 bool capture_audio() {
     size_t offset = 0;
@@ -4081,23 +4091,21 @@ bool capture_audio() {
 
 void setup() {
     Serial.begin(115200);
-
     delay(3000);
 
-    Serial.println("Initialising PDM microphone");
+    Serial.println("Initialising microphone");
 
-    Microphone_PDM::instance().withSampleRate(16000)
-        .withOutputSize(Microphone_PDM::OutputSize::SIGNED_16);
-
+    Microphone_PDM::instance().withSampleRate(SAMPLE_RATE).withOutputSize(Microphone_PDM::OutputSize::SIGNED_16);
     Microphone_PDM::instance().init();
     Microphone_PDM::instance().start();
 
-
     // Model setup
     Serial.println("Setting up model");
+
     uint16_t input_shape[] = {1, N_MFCC};
+
     input_layer = AILAYER_INPUT_F32_M(N_MFCC, input_shape);
-    dense1 = AILAYER_DENSE_F32_M(64, dense1_weights, dense1_bias);
+    dense1 = AILAYER_DENSE_F32_M( 64, dense1_weights, dense1_bias);
     relu1 = AILAYER_RELU_F32_M();
     dense2 = AILAYER_DENSE_F32_M(32, dense2_weights, dense2_bias);
     relu2 = AILAYER_RELU_F32_M();
@@ -4106,32 +4114,28 @@ void setup() {
     dense4 = AILAYER_DENSE_F32_M(NUM_CLASSES, dense4_weights, dense4_bias);
     softmax_layer = AILAYER_SOFTMAX_F32_M();
     model.input_layer = ailayer_input_f32_default(&input_layer);
-    x = ailayer_dense_f32_default(&dense1, model.input_layer);
-    x = ailayer_relu_f32_default(&relu1, x);
+
+    x = ailayer_dense_f32_default(&dense1,model.input_layer);
+    x = ailayer_relu_f32_default(&relu1,x);
     x = ailayer_dense_f32_default(&dense2, x);
     x = ailayer_relu_f32_default(&relu2, x);
     x = ailayer_dense_f32_default(&dense3, x);
     x = ailayer_relu_f32_default(&relu3, x);
     x = ailayer_dense_f32_default(&dense4, x);
+
     model.output_layer = ailayer_softmax_f32_default(&softmax_layer, x);
+    
     aialgo_compile_model(&model);
 
     Serial.println("Ready");
 }
-
-// =====================================================
-// LOOP
-// =====================================================
-
 void loop() {
     Serial.println("Capturing audio");
     capture_audio();
-
     Serial.println("Computing MFCC");
     compute_mfcc(sampleBuffer, mfcc_features);
-
-    Serial.println("Predicting ...");
+    Serial.println("Predicting");
     predict(mfcc_features);
 
-    delay(1000);
+    delay(10);
 }
